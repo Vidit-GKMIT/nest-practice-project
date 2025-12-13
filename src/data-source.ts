@@ -1,6 +1,7 @@
 import 'reflect-metadata';
 import { DataSource } from 'typeorm';
 import * as dotenv from 'dotenv';
+import { Department } from './department/entities/department.entity';
 dotenv.config();
 
 export const AppDataSource = new DataSource({
@@ -14,5 +15,5 @@ export const AppDataSource = new DataSource({
   logging: false,
   migrations: [],
   subscribers: [],
-  entities: [__dirname + '/**/*.entity.js'],
+  entities: [Department],
 });

@@ -1,7 +1,6 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigService } from '@nestjs/config';
-import { Department } from '../department/entities/department.entity';
 
 @Module({
   imports: [
@@ -15,8 +14,8 @@ import { Department } from '../department/entities/department.entity';
         synchronize: true,
         type: 'postgres' as const,
         logging: false,
-        // autoLoadEntities: true,
-        entities: [Department],
+        autoLoadEntities: true,
+        entities: [],
       }),
       inject: [ConfigService],
     }),
