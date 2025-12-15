@@ -1,4 +1,3 @@
-import { Type } from 'class-transformer';
 import {
   IsEmail,
   IsInt,
@@ -17,7 +16,6 @@ export class CreateEmployeeDto {
   })
   name: string;
 
-  @Type(() => Number)
   @IsInt({ message: 'Salary should be integer.' })
   @IsPositive({ message: 'Salary should be positive.' })
   @IsNotEmpty({ message: 'Salary key should not be empty.' })
@@ -29,7 +27,7 @@ export class CreateEmployeeDto {
   email: string;
 
   @IsString({ message: 'Department name should be string.' })
-  @IsNotEmpty({ message: 'Department name key should not be empty' })
+  @IsNotEmpty({ message: 'Department name key should not be empty.' })
   @MaxLength(25)
   department: string;
 }
