@@ -7,7 +7,6 @@ import { getRepositoryToken } from '@nestjs/typeorm';
 
 describe('EmployeeService', () => {
   let service: EmployeeService;
-  let departmentRepo: Repository<Department>;
   let employeeRepo: Repository<Employee>;
 
   beforeEach(async () => {
@@ -50,11 +49,20 @@ describe('EmployeeService', () => {
       },
     ];
 
+    interface pageType {
+      limit: number;
+      page: number;
+    }
+    const obj: pageType = {
+      limit: 10,
+      page: 1,
+    };
+
     jest
       .spyOn(employeeRepo, 'findAndCount')
       .mockResolvedValue([employees as Employee[], 1]);
 
-    const result = await service.findAll(1, 10);
+    const result = await service.findAll(obj);
     expect(result.success).toBe(true);
     expect(result.data).toEqual(employees);
     expect(result.pagination.page).toBe(1);
@@ -75,7 +83,14 @@ describe('EmployeeService', () => {
       department: departmentData,
     } as Employee);
 
-    const result = await service.findOne(8);
+    interface iddto {
+      id: number;
+    }
+    const obj: iddto = {
+      id: 8,
+    };
+
+    const result = await service.findOne(obj);
 
     expect(result.success).toBe(true);
     expect(result.message).toBe('Data fetched successfully');
@@ -83,12 +98,20 @@ describe('EmployeeService', () => {
   });
 
   it('should return empty data when page and limit exceed total records', async () => {
+    interface pageType {
+      limit: number;
+      page: number;
+    }
+    const obj: pageType = {
+      limit: 10,
+      page: 1,
+    };
     jest.spyOn(employeeRepo, 'findAndCount').mockResolvedValue([[], 5]);
-    const result = await service.findAll(20, 20);
+    const result = await service.findAll(obj);
     expect(result.success).toBe(true);
     expect(result.data).toEqual([]);
     expect(result.data.length).toBe(0);
-    expect(result.pagination.page).toBe(20);
-    expect(result.pagination.limit).toBe(20);
+    expect(result.pagination.page).toBe(1);
+    expect(result.pagination.limit).toBe(10);
   });
 });

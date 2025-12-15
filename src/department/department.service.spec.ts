@@ -78,7 +78,23 @@ describe('DepartmentService', () => {
       .spyOn(employeeRepo, 'findAndCount')
       .mockResolvedValue([employees as Employee[], 1]);
 
-    const result = await service.getAllEmployees(departmentId, page, limit);
+    interface pageType {
+      limit: number;
+      page: number;
+    }
+    const obj1: pageType = {
+      limit: 10,
+      page: 1,
+    };
+
+    interface iddto {
+      id: number;
+    }
+    const obj2: iddto = {
+      id: 1,
+    };
+
+    const result = await service.getAllEmployees(obj2, obj1);
     expect(result.success).toBe(true);
     expect(result.data).toEqual(employees);
     expect(result.pagination.page).toBe(1);
