@@ -8,6 +8,7 @@ import {
   Timestamp,
   OneToMany,
 } from 'typeorm';
+import { Exclude } from 'class-transformer';
 import { Employee } from '../../employee/entities/employee.entity';
 
 @Entity('departments')
@@ -36,13 +37,14 @@ export class Department {
     name: 'updated_at',
     default: () => 'CURRENT_TIMESTAMP',
   })
-  updatedAt: Date;
+  updatedAt: Timestamp;
 
+  @Exclude()
   @DeleteDateColumn({
     type: 'timestamptz',
     name: 'deleted_at',
     default: null,
     nullable: true,
   })
-  deletedAt: Date;
+  deletedAt: Timestamp;
 }
