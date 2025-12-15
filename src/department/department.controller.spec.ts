@@ -18,7 +18,6 @@ describe('DepartmentController', () => {
           useValue: {},
         },
 
-        // mock Employee repository
         {
           provide: getRepositoryToken(Employee),
           useValue: {},
