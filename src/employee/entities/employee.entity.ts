@@ -8,6 +8,7 @@ import {
   ManyToOne,
   PrimaryGeneratedColumn,
   Timestamp,
+  Unique,
   UpdateDateColumn,
 } from 'typeorm';
 import { Department } from '../../department/entities/department.entity';
@@ -15,6 +16,7 @@ import { Exclude } from 'class-transformer';
 
 @Entity('employees')
 @Check(`"salary" >= 0`)
+@Unique(['email', 'deletedAt'])
 export class Employee {
   @PrimaryGeneratedColumn()
   id: number;
@@ -51,7 +53,7 @@ export class Employee {
     name: 'updated_at',
     default: () => 'CURRENT_TIMESTAMP',
   })
-  updatedAt: Date;
+  updatedAt: Timestamp;
 
   @Exclude()
   @DeleteDateColumn({
@@ -60,5 +62,5 @@ export class Employee {
     default: null,
     nullable: true,
   })
-  deletedAt: Date;
+  deletedAt: Timestamp;
 }

@@ -37,7 +37,7 @@ export class Department {
     name: 'updated_at',
     default: () => 'CURRENT_TIMESTAMP',
   })
-  updatedAt: Date;
+  updatedAt: Timestamp;
 
   @Exclude()
   @DeleteDateColumn({
@@ -46,5 +46,5 @@ export class Department {
     default: null,
     nullable: true,
   })
-  deletedAt: Date;
+  deletedAt: Timestamp;
 }
