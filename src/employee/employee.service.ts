@@ -1,5 +1,4 @@
 import {
-  BadRequestException,
   ConflictException,
   Injectable,
   NotFoundException,
@@ -10,6 +9,8 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Employee } from './entities/employee.entity';
 import { Department } from '../department/entities/department.entity';
+import { PaginationDto } from '../common/dto/pagnation.dto';
+import { IdDto } from '../common/dto/entityId.dto';
 
 @Injectable()
 export class EmployeeService {
@@ -28,6 +29,8 @@ export class EmployeeService {
       throw new NotFoundException(`Department ${department} not found`);
     }
 
+    console.log(departmentData);
+
     const employeeData = await this.employeeRepo.findOne({
       where: { email },
     });
@@ -35,7 +38,6 @@ export class EmployeeService {
     if (employeeData) {
       throw new ConflictException(`Employee with this email already exists`);
     }
-
     const employee = this.employeeRepo.create({
       name,
       salary,
@@ -43,6 +45,7 @@ export class EmployeeService {
       department: departmentData,
     });
     const data = await this.employeeRepo.save(employee);
+    console.log(data);
     return {
       data: {
         id: data.id,
@@ -58,12 +61,8 @@ export class EmployeeService {
     };
   }
 
-  async findAll(page: number, limit: number) {
-    if (page < 0 || limit < 0 || !page || !limit) {
-      throw new BadRequestException(
-        'Please enter valid values for page and limit',
-      );
-    }
+  async findAll(paginationDto: PaginationDto) {
+    const { page, limit } = paginationDto;
     const skip = (page - 1) * limit;
     const [data, total] = await this.employeeRepo.findAndCount({
       relations: {
@@ -94,10 +93,10 @@ export class EmployeeService {
     };
   }
 
-  async findOne(id: number) {
+  async findOne(idDto: IdDto) {
     const data = await this.employeeRepo.findOne({
       where: {
-        id,
+        id: idDto.id,
       },
       relations: {
         department: true,
@@ -124,10 +123,10 @@ export class EmployeeService {
     };
   }
 
-  async update(id: number, updateEmployeeDto: UpdateEmployeeDto) {
-    const { name, email, salary, department } = updateEmployeeDto;
+  async update(idDto: IdDto, updateEmployeeDto: UpdateEmployeeDto) {
+    const { name, salary, department } = updateEmployeeDto;
     const employee = await this.employeeRepo.findOne({
-      where: { id },
+      where: { id: idDto.id },
     });
 
     if (!employee) {
@@ -143,9 +142,8 @@ export class EmployeeService {
         `Department ${updateEmployeeDto.department} not found`,
       );
     }
-    await this.employeeRepo.update(id, {
+    await this.employeeRepo.update(idDto.id, {
       name,
-      email,
       salary,
       department: departmentData,
     });
@@ -155,14 +153,16 @@ export class EmployeeService {
     };
   }
 
-  async remove(id: number) {
-    const employee = await this.employeeRepo.findOne({ where: { id } });
+  async remove(idDto: IdDto) {
+    const employee = await this.employeeRepo.findOne({
+      where: { id: idDto.id },
+    });
     console.log(employee);
     if (!employee) {
       throw new NotFoundException('Employee not found');
     }
 
-    await this.employeeRepo.softDelete(id);
+    await this.employeeRepo.softDelete(idDto.id);
     return {
       message: 'Data deleted successfully',
       success: true,

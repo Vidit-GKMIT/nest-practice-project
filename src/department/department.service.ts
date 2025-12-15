@@ -7,6 +7,8 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Department } from './entities/department.entity';
 import { Repository } from 'typeorm';
 import { Employee } from '../employee/entities/employee.entity';
+import { PaginationDto } from '../common/dto/pagnation.dto';
+import { IdDto } from '../common/dto/entityId.dto';
 
 @Injectable()
 export class DepartmentService {
@@ -18,12 +20,8 @@ export class DepartmentService {
     private readonly employeeRepo: Repository<Employee>,
   ) {}
 
-  async findAll(page: number, limit: number) {
-    if (page < 0 || limit < 0 || !page || !limit) {
-      throw new BadRequestException(
-        'Please enter valid values for page and limit',
-      );
-    }
+  async findAll(paginationDto: PaginationDto) {
+    const { page, limit } = paginationDto;
     const skip = (page - 1) * limit;
 
     const [data, total] = await this.departmentRepo.findAndCount({
@@ -49,15 +47,11 @@ export class DepartmentService {
     };
   }
 
-  async getAllEmployees(id: number, page: number, limit: number) {
-    if (page < 0 || limit < 0 || !page || !limit) {
-      throw new BadRequestException(
-        'Please enter valid values for page and limit',
-      );
-    }
+  async getAllEmployees(idDto: IdDto, paginationDto: PaginationDto) {
+    const { page, limit } = paginationDto;
 
     const department = await this.departmentRepo.findOne({
-      where: { id },
+      where: { id: idDto.id },
     });
 
     if (!department) {
@@ -68,7 +62,7 @@ export class DepartmentService {
 
     const [employeeData, total] = await this.employeeRepo.findAndCount({
       where: {
-        department: { id },
+        department: { id: idDto.id },
       },
       take: limit,
       skip,
